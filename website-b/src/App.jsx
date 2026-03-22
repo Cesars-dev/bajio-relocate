@@ -6,7 +6,8 @@ import {
   MapPin, CheckCircle, Lock, Calendar, Phone,
   Building2, GraduationCap, HeartPulse, Home,
   Briefcase, Star, Clock, Globe, ChevronRight,
-  User, Factory, Award, Key
+  User, Factory, Award, Key,
+  Menu, X
 } from 'lucide-react';
 
 /* ─── Magic UI Components ─── */
@@ -244,7 +245,7 @@ function Leon360() {
           );
         })}
       </div>
-      <div className="relative bg-surface border border-white/5 rounded-4xl p-8 md:p-12 overflow-hidden">
+      <div className="relative bg-surface border border-white/5 rounded-3xl sm:rounded-4xl p-6 sm:p-8 md:p-12 overflow-hidden">
         <BorderBeam size={200} duration={18} colorFrom="#D97706" colorTo="#F1F5F9" />
         <div className="relative z-10">
           <h3 className="font-display text-2xl md:text-3xl font-bold text-white mb-4">{active.title}</h3>
@@ -304,7 +305,14 @@ export default function App() {
   const appRef = useRef(null);
   const [scrolled, setScrolled] = useState(false);
   const [lang, setLang] = useState('en');
+  const [mobileOpen, setMobileOpen] = useState(false);
   const t = T[lang];
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
 
   const profileIcons = [Briefcase, User, Factory];
   const cardIcons = [Key, Users, Star, Shield];
@@ -329,8 +337,34 @@ export default function App() {
       <div ref={appRef} className="min-h-screen bg-background text-text-main font-body relative overflow-x-hidden">
         <div className="noise-overlay" />
 
+        {/* ═══════════ MOBILE MENU ═══════════ */}
+        <div className={`mobile-menu md:hidden ${mobileOpen ? 'open' : ''}`}>
+          <a href="#programs" onClick={() => setMobileOpen(false)} className="text-white">{t.navPrograms}</a>
+          <a href="#leon360" onClick={() => setMobileOpen(false)} className="text-white">{t.navLeon}</a>
+          <a href="#hub" onClick={() => setMobileOpen(false)} className="text-white">{t.navHub}</a>
+          <div className="flex items-center gap-3 mt-6 pt-4 border-t border-white/10">
+            {['ES', 'EN'].map(l => (
+              <button key={l} onClick={() => { setLang(l.toLowerCase()); setMobileOpen(false); }}
+                className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all cursor-pointer ${lang === l.toLowerCase() ? 'bg-accent text-black' : 'bg-surface text-text-muted border border-white/10'}`}>
+                {l}
+              </button>
+            ))}
+          </div>
+          <ShimmerButton
+            shimmerColor="#F59E0B"
+            shimmerSize="2px"
+            shimmerDuration="2.5s"
+            background="rgba(217, 119, 6, 1)"
+            borderRadius="100px"
+            className="!py-4 !px-8 text-base font-bold gap-2 mt-8 w-full"
+            onClick={() => { setMobileOpen(false); document.getElementById('form')?.scrollIntoView({ behavior: 'smooth' }); }}
+          >
+            {t.navCta} <ArrowRight className="w-5 h-5" />
+          </ShimmerButton>
+        </div>
+
         {/* ═══════════ NAVBAR ═══════════ */}
-        <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${scrolled ? 'bg-background/90 backdrop-blur-xl border-b border-white/5 py-4' : 'bg-transparent py-6'}`}>
+        <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${scrolled ? 'bg-background/90 backdrop-blur-xl border-b border-white/5 py-3 md:py-4' : 'bg-transparent py-4 md:py-6'}`}>
           <div className="section-container flex items-center justify-between">
             <a href="#" className="font-display font-bold text-xl tracking-tight">
               BAJÍO<span className="text-accent ml-1">RELOCATE</span>
@@ -340,7 +374,7 @@ export default function App() {
               <a href="#leon360" className="hover:text-white transition-colors">{t.navLeon}</a>
               <a href="#hub" className="hover:text-white transition-colors">{t.navHub}</a>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <div className="hidden md:flex items-center gap-1 text-xs font-data">
                 {['ES', 'EN'].map(l => (
                   <button key={l} onClick={() => setLang(l.toLowerCase())}
@@ -355,11 +389,19 @@ export default function App() {
                 shimmerDuration="2.5s"
                 background="rgba(217, 119, 6, 1)"
                 borderRadius="100px"
-                className="!py-2.5 !px-5 !text-sm font-bold gap-2"
+                className="hidden md:inline-flex !py-2.5 !px-5 !text-sm font-bold gap-2"
                 onClick={() => document.getElementById('form')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 {t.navCta} <ArrowRight className="w-4 h-4" />
               </ShimmerButton>
+              {/* Mobile hamburger */}
+              <button
+                className="md:hidden w-11 h-11 flex items-center justify-center rounded-xl bg-surface/80 border border-white/10 text-white cursor-pointer transition-colors hover:border-accent/30"
+                onClick={() => setMobileOpen(v => !v)}
+                aria-label="Toggle menu"
+              >
+                {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
             </div>
           </div>
         </nav>
@@ -375,9 +417,9 @@ export default function App() {
               <span className="w-10 h-[2px] bg-accent" />
               <AnimatedShinyText shimmerWidth={120} className="text-accent">{t.heroTag}</AnimatedShinyText>
             </p>
-            <h1 className="hero-animate font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.95] tracking-tight mb-4">{t.heroH1a}</h1>
-            <h1 className="hero-animate font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl italic font-normal text-text-muted leading-[1] mb-8">{t.heroH1b}</h1>
-            <p className="hero-animate text-lg md:text-xl text-text-muted max-w-2xl leading-relaxed mb-10">{t.heroSub}</p>
+            <h1 className="hero-animate font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] tracking-tight mb-4">{t.heroH1a}</h1>
+            <h1 className="hero-animate font-serif text-3xl sm:text-4xl md:text-6xl lg:text-7xl italic font-normal text-text-muted leading-[1] mb-6 md:mb-8">{t.heroH1b}</h1>
+            <p className="hero-animate text-base sm:text-lg md:text-xl text-text-muted max-w-2xl leading-relaxed mb-8 md:mb-10">{t.heroSub}</p>
 
             <div className="hero-animate grid grid-cols-1 sm:grid-cols-3 gap-3 mb-10 max-w-3xl">
               {t.heroProfiles.map((p, i) => {
@@ -413,7 +455,7 @@ export default function App() {
         <section className="relative z-10 -mt-1 border-y border-white/5 bg-surface/50 backdrop-blur-sm">
           <div className="section-container py-10">
             <p className="text-center text-sm text-text-dim mb-8 font-data uppercase tracking-widest">{t.trustDesc}</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-6">
               <Stat value={145} label={t.trustLabels[0]} />
               <Stat value={42000} label={t.trustLabels[1]} />
               <Stat value={0} suffix="" label={t.trustLabels[2]} prefix="$" />
@@ -601,7 +643,7 @@ export default function App() {
               </div>
             </BlurFade>
             <BlurFade inView delay={0.1}>
-              <form className="relative bg-surface rounded-5xl border border-white/5 p-8 md:p-12 shadow-2xl overflow-hidden" onSubmit={e => { e.preventDefault(); alert(t.formAlert); }}>
+              <form className="relative bg-surface rounded-3xl sm:rounded-5xl border border-white/5 p-6 sm:p-8 md:p-12 shadow-2xl overflow-hidden" onSubmit={e => { e.preventDefault(); alert(t.formAlert); }}>
                 <BorderBeam size={250} duration={20} colorFrom="#D97706" colorTo="#F59E0B" />
                 <div className="relative z-10">
                   <div className="grid md:grid-cols-2 gap-5 mb-5">

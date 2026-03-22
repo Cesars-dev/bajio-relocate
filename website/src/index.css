@@ -5,12 +5,14 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply bg-background text-text-main font-body;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.7;
+    overflow-x: hidden;
   }
   ::selection {
     @apply bg-accent text-white;
@@ -49,12 +51,12 @@
 
   /* Section container */
   .section-container {
-    @apply max-w-7xl mx-auto px-6 md:px-12;
+    @apply max-w-7xl mx-auto px-5 sm:px-6 md:px-12;
   }
 
   /* Glow effect for cards */
   .card-glow {
-    @apply relative bg-surface border border-white/5 rounded-4xl p-8 md:p-10
+    @apply relative bg-surface border border-white/5 rounded-3xl sm:rounded-4xl p-6 sm:p-8 md:p-10
            transition-all duration-500 ease-out;
   }
   .card-glow:hover {
@@ -68,6 +70,40 @@
     @apply w-16 h-[3px] bg-accent rounded-full;
   }
 }
+
+/* ═══════════════════════════════════════════════════════ */
+/* Mobile Menu Overlay                                     */
+/* ═══════════════════════════════════════════════════════ */
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  background: rgba(10, 15, 28, 0.97);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 7rem 2rem 3rem;
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0, 1),
+              opacity 0.3s ease;
+  pointer-events: none;
+}
+.mobile-menu.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.mobile-menu a, .mobile-menu button {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: color 0.2s;
+}
+.mobile-menu a:last-child { border-bottom: none; }
 
 /* Noise overlay */
 .noise-overlay {
@@ -95,7 +131,7 @@
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
-  height: 6px;
+  height: 8px;
   background: #1A2540;
   border-radius: 999px;
   outline: none;
@@ -103,8 +139,8 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: #D97706;
   cursor: pointer;
@@ -120,3 +156,45 @@ input[type="range"]::-webkit-slider-thumb:hover {
 ::-webkit-scrollbar-track { background: #0A0F1C; }
 ::-webkit-scrollbar-thumb { background: #1A2540; border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: #D97706; }
+
+/* ═══════════════════════════════════════════════════════ */
+/* Mobile-specific polish                                  */
+/* ═══════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* Tighten section spacing on mobile */
+  section {
+    padding-top: 5rem !important;
+    padding-bottom: 5rem !important;
+  }
+
+  /* Larger touch targets for form elements */
+  input, select, textarea, button {
+    min-height: 48px;
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+  }
+
+  /* Full-width buttons on mobile */
+  .btn-primary, .btn-outline {
+    @apply w-full justify-center text-center;
+  }
+
+  /* Better stat sizing */
+  .stat-value {
+    font-size: 2.5rem;
+  }
+
+  /* Fix horizontal overflow from decorative elements */
+  .noise-overlay {
+    overflow: hidden;
+  }
+}
+
+/* Safe area insets for notched phones */
+@supports (padding: env(safe-area-inset-bottom)) {
+  footer {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+  .fixed.bottom-6 {
+    bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+}
