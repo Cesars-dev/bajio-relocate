@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bajio-relocate-a.netlify.app/sitemap.xml
